@@ -71,8 +71,11 @@ impl MinHeap {
 
     /// The removal method for the min heap.
     pub fn remove(&mut self) -> () {
-        let last_index = self.heap.len() - 1;
+        if self.heap.is_empty() {
+            return;
+        }
 
+        let last_index = self.heap.len() - 1;
         self.heap.swap(0, last_index);
         self.heap.pop();
         self.re_heap_down(0);
@@ -102,8 +105,12 @@ impl MinHeap {
 
     /// The get method for the top value in the heap. This is guaranteed to be
     /// the lowest value overall in the heap.
-    pub fn top_value(&self) -> i32 {
-        return self.heap[0].value
+    pub fn top_value(&self) -> Option<i32> {
+        if self.heap.is_empty() {
+            return None;
+        } else {
+            return Some(self.heap[0].value)
+        }
     }
 
 }
@@ -173,6 +180,6 @@ mod tests {
         };
 
         let top_value = min_heap.top_value();
-        assert_eq!(top_value, 70);
+        assert_eq!(top_value, Some(70));
     }
 }

@@ -27,12 +27,12 @@ impl MinHeap {
             // There are 2 children
             (Some(left_child), Some(right_child)) => {
                 // Swap the left child
-                if left_child.value < right_child.value && left_child.value < self.heap[target_index].value {
+                if left_child.frequency < right_child.frequency && left_child.frequency < self.heap[target_index].frequency {
                     self.heap.swap(left_child_index, target_index);
                     self.re_heap_down(left_child_index);
                 
                 // Swap the right child
-                } else if right_child.value < left_child.value && right_child.value < self.heap[target_index].value {
+                } else if right_child.frequency < left_child.frequency && right_child.frequency < self.heap[target_index].frequency {
                     self.heap.swap(right_child_index, target_index);
                     self.re_heap_down(right_child_index);
 
@@ -45,7 +45,7 @@ impl MinHeap {
             // There is only the left child
             (Some(left_child), None) => {
                 // Left child needs to be swapped
-                if left_child.value < self.heap[target_index].value {
+                if left_child.frequency < self.heap[target_index].frequency {
                     self.heap.swap(left_child_index, target_index);
                     self.re_heap_down(left_child_index);
                 } else {
@@ -56,7 +56,7 @@ impl MinHeap {
             // There is only the right child
             (None, Some(right_child)) => {
                 // Right child needs to be swapped
-                if right_child.value < self.heap[target_index].value {
+                if right_child.frequency < self.heap[target_index].frequency {
                     self.heap.swap(right_child_index, target_index);
                     self.re_heap_down(right_child_index);
                 } else {
@@ -89,7 +89,7 @@ impl MinHeap {
     pub fn re_heap_up(&mut self, target_index: usize) -> () {
         if target_index != 0 {
             let parent_index = (target_index - 1) / 2;
-            if self.heap[target_index] < self.heap[parent_index] {
+            if self.heap[target_index].frequency < self.heap[parent_index].frequency {
                 self.heap.swap(target_index, parent_index);
                 self.re_heap_up(parent_index);
             };
@@ -97,19 +97,19 @@ impl MinHeap {
     }
 
     /// The insertion method for the min heap. 
-    pub fn insert(&mut self, value: i32) -> () {
-        self.heap.push(HeapNode { value });
+    pub fn insert(&mut self, value_identity: i32, frequency: i32) -> () {
+        self.heap.push(HeapNode { value_identity, frequency });
         let last_index = self.heap.len() - 1;
         self.re_heap_up(last_index);
     }
 
     /// The get method for the top value in the heap. This is guaranteed to be
     /// the lowest value overall in the heap.
-    pub fn top_value(&self) -> Option<i32> {
+    pub fn top_frequency(&self) -> Option<i32> {
         if self.heap.is_empty() {
             return None;
         } else {
-            return Some(self.heap[0].value)
+            return Some(self.heap[0].frequency)
         }
     }
 
@@ -126,60 +126,60 @@ mod tests {
     fn test_remove() {
         let mut min_heap = MinHeap {
             heap: vec![
-                HeapNode { value: 105 },
-                HeapNode { value : 80 },
-                HeapNode { value: 90 },
-                HeapNode { value: 100 },
-                HeapNode { value: 110 },
+                HeapNode { value_identity: 100, frequency: 105 },
+                HeapNode { value_identity: 90, frequency : 80 },
+                HeapNode { value_identity: 110, frequency: 90 },
+                HeapNode { value_identity: 76, frequency: 100 },
+                HeapNode { value_identity: 9, frequency: 110 },
             ],
         };
 
         min_heap.re_heap_down(0);
-        assert_eq!(min_heap.heap[0].value, 80);
-        assert_eq!(min_heap.heap[1].value, 100);
-        assert_eq!(min_heap.heap[2].value, 90);
-        assert_eq!(min_heap.heap[3].value, 105);
-        assert_eq!(min_heap.heap[4].value, 110);
+        assert_eq!(min_heap.heap[0].frequency, 80);
+        assert_eq!(min_heap.heap[1].frequency, 100);
+        assert_eq!(min_heap.heap[2].frequency, 90);
+        assert_eq!(min_heap.heap[3].frequency, 105);
+        assert_eq!(min_heap.heap[4].frequency, 110);
 
         min_heap.remove();
-        assert_eq!(min_heap.heap[0].value, 90);
-        assert_eq!(min_heap.heap[1].value, 100);
-        assert_eq!(min_heap.heap[2].value, 110);
-        assert_eq!(min_heap.heap[3].value, 105);
+        assert_eq!(min_heap.heap[0].frequency, 90);
+        assert_eq!(min_heap.heap[1].frequency, 100);
+        assert_eq!(min_heap.heap[2].frequency, 110);
+        assert_eq!(min_heap.heap[3].frequency, 105);
     }
 
     #[test]
     fn test_insert() {
         let mut min_heap = MinHeap {
             heap: vec![
-                HeapNode { value: 75 },
-                HeapNode { value : 80 },
-                HeapNode { value: 90 },
-                HeapNode { value: 100 },
-                HeapNode { value: 70 },
+                HeapNode { value_identity: 100, frequency: 75 },
+                HeapNode { value_identity: 22, frequency : 80 },
+                HeapNode { value_identity: 3, frequency: 90 },
+                HeapNode { value_identity: 8, frequency: 100 },
+                HeapNode { value_identity: 10, frequency: 70 },
             ],
         };
 
         min_heap.re_heap_up(4);
-        assert_eq!(min_heap.heap[0].value, 70);
+        assert_eq!(min_heap.heap[0].frequency, 70);
 
-        min_heap.insert(72);
-        assert_eq!(min_heap.heap[2].value, 72);
+        min_heap.insert(10, 72);
+        assert_eq!(min_heap.heap[2].frequency, 72);
     }
 
     #[test]
-    fn test_top_value() {
+    fn test_top_frequency() {
         let mut min_heap = MinHeap {
             heap: vec![
-                HeapNode { value: 70 },
-                HeapNode { value : 80 },
-                HeapNode { value: 90 },
-                HeapNode { value: 100 },
-                HeapNode { value: 110 },
+                HeapNode { value_identity: 1, frequency: 70 },
+                HeapNode { value_identity: 2, frequency : 80 },
+                HeapNode { value_identity: 3, frequency: 90 },
+                HeapNode { value_identity: 4, frequency: 100 },
+                HeapNode { value_identity: 5, frequency: 110 },
             ],
         };
 
-        let top_value = min_heap.top_value();
+        let top_value = min_heap.top_frequency();
         assert_eq!(top_value, Some(70));
     }
 }

@@ -119,7 +119,6 @@ impl MinHeap {
 
 #[cfg(test)]
 mod tests {
-    use std::cmp::min;
     use super::*;
 
     #[test]
